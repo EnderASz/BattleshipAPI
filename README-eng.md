@@ -9,3 +9,5 @@ __[Aby przejść do polskiej wersji 'README.md' naciśnij tutaj](./README-pl.md)
 - SQLAlchemy
 - Other Python libraries mentioned in `requirements.txt`
 - PostgreSQL
+
+For running application in development process used `Uvicorn`.

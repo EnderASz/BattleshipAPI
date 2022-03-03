@@ -13,3 +13,5 @@ Dodatkowym atutem miało być użycie systemu relacyjnych baz danych SQL oraz bi
 - Inne biblioteki języka Python wymienione w pliku `requirements.txt`
 - PostgreSQL
 
+Do uruchamiania aplikacji w procesie tworzenia aplikacji, wykorzystano `Uvicorn`.
+
