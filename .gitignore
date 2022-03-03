@@ -7,3 +7,7 @@ __pycache__/
 .venv/
 .env
 config.*
+
+# Development files and tools
+dev/
+
