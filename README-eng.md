@@ -1,5 +1,5 @@
 # BattleshipAPI
-__[Aby przejść do polskiej wersji 'README.md' naciśnij tutaj](./README-pl.md)__
+__[Aby przejść do polskiej wersji 'README.md' naciśnij tutaj](./README.md)__
 
 <!-- TODO -  Project description -->
 
