@@ -1,4 +1,6 @@
 fastapi
 pydantic
 sqlalchemy
-dotenv-python
+
+# For use .env files as source of enviroment variables
+python-dotenv
