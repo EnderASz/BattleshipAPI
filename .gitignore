@@ -6,6 +6,8 @@ __pycache__/
 # Enviroment
 .venv/
 .env
+
+# App config
 config.*
 
 # Development files and tools
