@@ -20,7 +20,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         FastAPI: BattleshipAPI app instance
     """
     if settings is None:
-        settings = get_settings()
+        init_settings()
+    else:
+        init_settings_from_object(settings)
+    settings = get_app_settings()
         
     logging.init(
         logging.DEFAULT_LOGGER_NAME

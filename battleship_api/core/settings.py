@@ -62,3 +62,48 @@ def get_settings(json_path: Path | None = None, **settings_set) -> Settings:
         else:
             settings_set |= config
     return Settings(**settings_set)
+
+
+def init(json_path: Path | None = None, **settings_set):
+    """
+    Function that initializes settings for the application from (higher
+    position means higher piority):
+        - Json configuration file available at given `json_path`
+        - keyword parameters passed to this function
+        - environment variables
+
+    Params:
+        - json_path [Optional] - Filepath to json configuration file.
+            - If not provided, by default function tries to get path from
+              `{battleship_api.core.settings.ENV_PREFIX}_config_path`
+              enviroment variable.
+            - If is it not possible to get path from both parameter and
+              enviroment variable function skips attemp of reading
+              configuration file.
+
+        - **settings_set - Keyword parameters overwriting settings defined by
+          the enviroment variables.
+            - Can be overwrited by settings from json configuration file.
+    """
+    global settings
+    settings = get_settings(json_path, **settings_set)
+
+
+def init_from_object(settings_obj: Settings):
+    """
+    Function that initializes settings for the application from given object.
+
+    Params:
+        - settings_obj: Settings object instance which is used to initialize
+          application settings
+    """
+    global settings
+    settings = settings_obj
+
+
+def get_app_settings():
+    """
+    Returns application settings instance
+    """
+    global settings
+    return settings
