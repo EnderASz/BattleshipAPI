@@ -21,7 +21,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     """
     if settings is None:
         settings = get_settings()
-    if settings.debug:
-        logging.init(logging.DEBUG_LOGGER_NAME)
+        
+    logging.init(
+        logging.DEFAULT_LOGGER_NAME
+        if settings.debug
+        else logging.DEBUG_LOGGER_NAME)
     app = FastAPI()
     return app

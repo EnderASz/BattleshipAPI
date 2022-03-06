@@ -3,7 +3,7 @@ from pydantic import BaseSettings, Field
 import json
 import os
 
-from .logging import logger
+from .logging import get_app_logger
 
 from pathlib import Path
 
@@ -54,10 +54,10 @@ def get_settings(json_path: Path | None = None, **settings_set) -> Settings:
         try:
             config = json.load(open(json_path, encoding='utf-8'))
         except FileNotFoundError:
-            logger.warning(
+            get_app_logger().warning(
                 f"Config file `{json_path}` could not be found.")
         except json.decoder.JSONDecodeError:
-            logger.warning(
+            get_app_logger().warning(
                 f"Config file `{json_path}` could not be decoded properly.")
         else:
             settings_set |= config

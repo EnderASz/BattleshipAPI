@@ -53,4 +53,9 @@ def init(name: str | None = None):
     logger = logging.getLogger(name or DEFAULT_LOGGER_NAME)
 
 
-init()  # Called here for initializing base app logger by default
+def get_app_logger():
+    """
+    Returns application logger instance.
+    """
+    global logger
+    return logger
