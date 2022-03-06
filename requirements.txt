@@ -4,3 +4,6 @@ sqlalchemy
 
 # For use .env files as source of enviroment variables
 python-dotenv
+
+# For use postgresql database connection
+psycopg2

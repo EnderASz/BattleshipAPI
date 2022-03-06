@@ -6,6 +6,7 @@ import os
 from .logging import get_app_logger
 
 from pathlib import Path
+from pydantic import AnyUrl, PostgresDsn
 
 
 ENV_PREFIX = 'battleship_api'
@@ -15,6 +16,9 @@ class Settings(BaseSettings):
     host: str = Field('127.0.0.1')
     port: int = Field(80)
     debug: bool = Field(True)
+
+    db_url: PostgresDsn | AnyUrl | None
+    db_check_same_thread: bool | None
 
     class Config:
         case_sensitive = False

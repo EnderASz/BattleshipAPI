@@ -10,6 +10,12 @@ __pycache__/
 # App config
 config.*
 
+# Database and app storage
+*.sqlite3
+*.sqlite
+*.db
+
+
 # Development files and tools
 dev/
 

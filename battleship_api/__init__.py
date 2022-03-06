@@ -1,7 +1,12 @@
 from fastapi import FastAPI
 
+from .core import database
 from .core import logging
-from .core.settings import Settings, get_settings
+from .core.settings import (
+    init as init_settings,
+    init_from_object as init_settings_from_object)
+
+from .core.settings import get_app_settings, Settings
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -24,10 +29,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     else:
         init_settings_from_object(settings)
     settings = get_app_settings()
-        
+
     logging.init(
         logging.DEFAULT_LOGGER_NAME
         if settings.debug
         else logging.DEBUG_LOGGER_NAME)
+
+    db_args = dict()
+    if settings.db_check_same_thread is not None:
+        db_args |= {'check_same_thread': settings.db_check_same_thread}
+    database.init(settings.db_url, **db_args)
+
     app = FastAPI()
     return app
+
