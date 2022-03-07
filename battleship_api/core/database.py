@@ -1,6 +1,5 @@
-from operator import index
 from pydantic import AnyUrl
-from sqlalchemy import Column, Integer, String, create_engine
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -43,7 +42,8 @@ def get_db_session():
     """
     Generator that at first yields the database session instance and nextly
     closes this session.
-    Designed to be used as dependable function with FastAPI path operation functions.
+    Designed to be used as dependable function with FastAPI path operation
+    functions.
     """
     global LocalSession
     db_session = LocalSession()
