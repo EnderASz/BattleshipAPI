@@ -40,6 +40,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         db_args |= {'check_same_thread': settings.db_check_same_thread}
     database.init(settings.db_url, **db_args)
 
-    app = FastAPI()
-    app.add_exception_handler(exceptions.BaseAPIException, exceptions.api_exceptions_handler)
+    app.add_exception_handler(
+        exceptions.BaseAPIException,
+        exceptions.api_exceptions_handler)
+
+    app.include_router(api_router)
     return app
