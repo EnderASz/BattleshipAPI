@@ -14,4 +14,3 @@ class Board(BaseModel):
     players = relationship(
         'battleship_api.api.player.models.Player',
         back_populates='board')
-

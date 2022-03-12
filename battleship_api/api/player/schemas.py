@@ -1,7 +1,9 @@
-from pydantic import BaseModel as BaseSchema, validator
-from fastapi import HTTPException, status
+from pydantic import BaseModel as BaseSchema
 
 
-class Player(BaseSchema):
-    id: int
+class PlayerBase(BaseSchema):
     board_id: int
+
+
+class Player(PlayerBase):
+    id: int

@@ -14,8 +14,10 @@ class BoardCreate(BoardBase):
         return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
 
-class Board(BoardBase):
+class BoardSearch(BaseSchema):
     id: int
 
+
+class Board(BoardBase, BoardSearch):
     class Config:
         orm_mode = True
