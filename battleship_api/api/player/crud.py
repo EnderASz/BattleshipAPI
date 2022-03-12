@@ -60,7 +60,8 @@ def get_players(
 def delete_player(db: Session, player_id: int):
     """
     Removes player from the database and returns number of deleted players.
-    In this case it always be 0 (if player remove was not successful) or 1 (if player remove was successful).
+    In this case it always be 0 (if player remove was not successful)
+    or 1 (if player remove was successful).
 
     Params:
         - db: Database session

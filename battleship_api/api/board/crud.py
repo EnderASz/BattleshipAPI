@@ -7,7 +7,7 @@ from . import models
 def create_board(db: Session, board: schemas.BoardCreate):
     """Creates board instance and adds it to the database.
 
-    Args:
+    Params:
         - db: Database session
         - board: Board data represented by
             `battleship_api.api.board.schemas.BoardCreate` schema
@@ -40,7 +40,7 @@ def get_boards(db: Session, limit: int, offset: int):
     """
     Returns list of 'limit' boards in database starting from `offset` board.
 
-    Args:
+    Params:
         db: Database session
         - limit: Number of boards to return
         - offset: Number of skipped boards
