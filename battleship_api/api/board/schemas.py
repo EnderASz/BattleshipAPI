@@ -11,7 +11,10 @@ class BoardCreate(BoardBase):
     def password_validator(cls, password):
         if not password:
             return None
-        return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        return bcrypt.hashpw(
+            password.encode('utf-8'),
+            bcrypt.gensalt()
+        ).decode('utf-8')
 
 
 class BoardSearch(BaseSchema):
@@ -24,4 +27,5 @@ class Board(BoardBase, BoardSearch):
 
 
 class BoardOut(BoardSearch):
-    pass
+    class Config:
+        orm_mode = True
