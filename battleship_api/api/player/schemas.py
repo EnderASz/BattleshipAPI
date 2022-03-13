@@ -5,5 +5,9 @@ class PlayerBase(BaseSchema):
     board_id: int
 
 
-class Player(PlayerBase):
+class PlayerSearch(BaseSchema):
     id: int
+
+
+class Player(PlayerBase, PlayerSearch):
+    pass
