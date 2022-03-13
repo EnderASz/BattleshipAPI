@@ -18,7 +18,7 @@ def encode_player(player: schemas.Player) -> str:
         JWT token string encoded from player's id and assigned board id
     """
     return jwt.encode(
-        player,
+        player.dict(),
         get_app_settings().secret_key,
         ENCODE_ALGORITHM)
 
