@@ -3,6 +3,14 @@ from fastapi import APIRouter
 from .board.routes import router as board_router
 from .player.routes import router as player_router
 
+from .board.tags import all_tags as board_tags
+from .player.tags import all_tags as player_tags
+
+
+api_tags = (
+    board_tags
+    + player_tags)
+
 
 api_router = APIRouter(prefix='/api')
 

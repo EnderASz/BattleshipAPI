@@ -6,6 +6,8 @@ from .core.settings import (
     init as init_settings,
     init_from_object as init_settings_from_object)
 
+from .api import api_router, api_tags
+
 from .core.settings import Settings
 
 
@@ -40,9 +42,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         db_args |= {'check_same_thread': settings.db_check_same_thread}
     database.init(settings.db_url, **db_args)
 
+    app = FastAPI(openapi_tags=api_tags)
     app.add_exception_handler(
         exceptions.BaseAPIException,
         exceptions.api_exceptions_handler)
 
     app.include_router(api_router)
+
     return app
