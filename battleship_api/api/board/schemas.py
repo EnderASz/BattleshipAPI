@@ -21,3 +21,7 @@ class BoardSearch(BaseSchema):
 class Board(BoardBase, BoardSearch):
     class Config:
         orm_mode = True
+
+
+class BoardOut(BoardSearch):
+    pass

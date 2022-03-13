@@ -13,7 +13,7 @@ router = APIRouter(prefix='/boards')
 
 @router.get(
     '/',
-    response_model=list[schemas.Board],
+    response_model=list[schemas.BoardOut],
     status_code=status.HTTP_200_OK,
     tags=[tags.boards_operation['name']])
 async def get_boards(
@@ -43,7 +43,7 @@ async def get_boards(
 
 @router.post(
     '/',
-    response_model=schemas.Board,
+    response_model=schemas.BoardOut,
     status_code=status.HTTP_201_CREATED,
     tags=[tags.boards_operation['name']])
 async def create_board(
@@ -69,7 +69,7 @@ async def create_board(
 
 @router.get(
     '/{board_id}',
-    response_model=schemas.Board,
+    response_model=schemas.BoardOut,
     status_code=status.HTTP_200_OK,
     tags=[tags.boards_operation['name']],
     responses=build_exceptions_dict(BoardNotFoundException))
