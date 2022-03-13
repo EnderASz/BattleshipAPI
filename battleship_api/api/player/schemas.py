@@ -10,4 +10,5 @@ class PlayerSearch(BaseSchema):
 
 
 class Player(PlayerBase, PlayerSearch):
-    pass
+    class Config:
+        orm_mode = True
