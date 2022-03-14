@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     db_url: PostgresDsn | AnyUrl | None
     db_check_same_thread: bool | None
 
+    secret_key: str = Field('please_overwrite_me_im_not_secure')
+
     class Config:
         case_sensitive = False
         env_file = '.env'
