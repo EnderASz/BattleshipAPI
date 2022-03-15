@@ -11,7 +11,7 @@ class Ship(BaseModel):
     __tablename__ = 'ships'
 
     id = Column(Integer, primary_key=True, index=True)
-    owner = Column(
+    owner_id = Column(
         Integer,
         ForeignKey(f'{Player.__tablename__}.id'),
         index=True)
