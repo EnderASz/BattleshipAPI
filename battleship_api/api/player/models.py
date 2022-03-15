@@ -17,3 +17,6 @@ class Player(BaseModel):
     board = relationship(
         'battleship_api.api.board.models.Board',
         back_populates='players')
+    owner = relationship(
+        'battleship_api.api.ship.models.Ship',
+        back_populates='player')
