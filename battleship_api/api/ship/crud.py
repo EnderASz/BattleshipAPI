@@ -1,14 +1,13 @@
-from sqlalchemy.sql import Session
-
 from .schemas import ShipCreate as ShipCreateSchema
 from .models import Ship as ShipModel
 from battleship_api.api.player.models import Player as PlayerModel
+
+from sqlalchemy.orm import Session
 
 
 def create_ship(
     db: Session,
     ship: ShipCreateSchema,
-    owner: PlayerModel
 ) -> ShipModel:
     """
     Creates ship instance assigned to player given via `owner` and adds it to
@@ -23,10 +22,10 @@ def create_ship(
     Returns:
         New ship database object instance.
     """
-    owner.ships.append(ship := ShipModel(**ship.dict()))
+    db.add(new_ship := ShipModel(**ship.dict()))
     db.commit()
-    db.refresh(ship)
-    return ship
+    db.refresh(new_ship)
+    return new_ship
 
 
 def get_ship(db: Session, ship_id: int) -> ShipModel | None:
