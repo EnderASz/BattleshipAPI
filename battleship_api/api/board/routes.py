@@ -22,7 +22,7 @@ async def get_boards(
     offset: int = 0
 ):
     """
-    Retrieves list of boards with lenght equal to `limit` query parameter
+    Retrieves list of boards with lenght limited to `limit` query parameter
     value, starting from `offset` player.
     \f
     Params:
