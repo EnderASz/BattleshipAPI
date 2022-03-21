@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from battleship_api.api.player.models import Player as PlayerModel
+from .models import Player as PlayerModel
 from battleship_api.api.board.models import Board as BoardModel
 
 
@@ -8,7 +8,8 @@ def create_player(
     db: Session,
     board: BoardModel,
 ) -> PlayerModel:
-    """Creates player instance, assignes and adds it to the database.
+    """
+    Creates player instance, assignes and adds it to the database.
 
     Params:
         - db: Database session
