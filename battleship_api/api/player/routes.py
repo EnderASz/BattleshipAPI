@@ -36,26 +36,26 @@ router = APIRouter(prefix='/players')
     status_code=status.HTTP_200_OK,
     tags=[tags.players_operation['name']])
 async def get_players(
-    db: Session = Depends(get_db_session),
     limit: int = 100,
-    offset: int = 0
+    offset: int = 0,
+    db: Session = Depends(get_db_session)
 ):
     """
-    Retrieves list of players with lenght equal to `limit` query parameter
+    Retrieves list of players with lenght limited to `limit` query parameter
     value, starting from `offset` player.
     \f
     Params:
+        - [Optional] limit: Maximum number of players to retrieve.
+            - Defaults to: 100.
+        - [Optional] offset: Number of players to skip before retrieve.
+            - Defaults to: 0.
         - db: Database session.
             - Provided automatically by
                 `battleship_api.core.database.get_db_session` dependency
                 during request.
-        - [Optional] limit: Number of players to retrieve.
-            - Defaults to: 100.
-        - [Optional] offset: Number of players to skip before retrieve.
-            - Defaults to: 0.
 
     Returns:
-        Players list of `limit` players from `offset` player.
+        Players list of length limited to `limit` starting at `offset` player.
     """
     return crud.get_players(db, limit, offset)
 
@@ -82,7 +82,6 @@ async def create_player(
 
     If password is required for the access to board, you should pass
     `password` value in request body.
-
     \f
     Params:
         - response: Response object that will be modified during request
