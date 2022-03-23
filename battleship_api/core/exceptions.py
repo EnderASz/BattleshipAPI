@@ -16,22 +16,28 @@ class BaseAPIException(HTTPException):
     message: str | None = None
     schema: BaseSchema | None = None
 
-    def __init__(self, exception_data: dict['str'] | None = None, **kwargs):
+    def __init__(
+        self,
+        exception_data: dict['str'] | BaseSchema | None = None,
+        **kwargs
+    ):
         """
         Initialize API exception instance with given data passed to response
         body schema constructor and pass `kwargs` to inherited HTTPException
         initializer.
 
         Args:
-            - [Optional] exception_data: Dictionary of parameters passed to
-                response schema constructor.
+            - [Optional] exception_data: Exception data schema instance or
+              dictionary of parameters passed to schema constructor.
         """
         super().__init__(self.code, self.message, **kwargs)
         self.data = {'description': self.message}
         if self.schema is not None:
             if exception_data is None:
                 exception_data = dict()
-            self.data.update({'data': self.schema(**exception_data).dict()})
+            if not isinstance(exception_data, self.schema):
+                exception_data = self.schema(**exception_data).dict()
+            self.data.update({'data': exception_data})
 
     def response(self):
         from fastapi.responses import JSONResponse
@@ -61,9 +67,6 @@ def build_exceptions_dict(*exceptions: type[BaseAPIException]):
     Returns:
         _type_: _description_
     """
-    print({
-        exception.code: exception.get_response_schema()
-        for exception in exceptions})
     return {
         exception.code: exception.get_response_schema()
         for exception in exceptions}
