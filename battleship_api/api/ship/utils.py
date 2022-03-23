@@ -3,6 +3,7 @@ from pydantic import BaseModel as BaseSchema
 from enum import Enum
 
 from . import schemas
+from .models import Ship as ShipModel
 
 
 class Orientation(Enum):
@@ -15,7 +16,9 @@ class Point(BaseSchema):
     y: int
 
 
-def get_ship_cords(ship: schemas.ShipLocation) -> tuple[Point, Point]:
+def get_ship_cords(
+    ship: schemas.ShipLocation | ShipModel
+) -> tuple[Point, Point]:
     """
     Returns points of start and end of a given ship in a tuple.
 
@@ -35,7 +38,11 @@ def get_ship_cords(ship: schemas.ShipLocation) -> tuple[Point, Point]:
         Point(ship.column, ship.row+ship.length-1))
 
 
-def is_ship(column: int, row: int, ships: list[schemas.ShipLocation]):
+def is_ship(
+    column: int,
+    row: int,
+    ships: list[schemas.ShipLocation | ShipModel]
+):
     """
     Checks if at given location (column and row) exists any ship from given
     list. If exists, returns True, otherwise False.
@@ -60,7 +67,10 @@ def is_ship(column: int, row: int, ships: list[schemas.ShipLocation]):
     return False
 
 
-def ships_collides(first: schemas.ShipLocation, second: schemas.ShipLocation):
+def ships_collides(
+    first: schemas.ShipLocation | ShipModel,
+    second: schemas.ShipLocation | ShipModel
+):
     """
     Checks if given ships positions collides with each other. If they do,
     returns True, otherwise False.
@@ -86,7 +96,10 @@ def ships_collides(first: schemas.ShipLocation, second: schemas.ShipLocation):
         max(start_rows) <= min(end_rows))
 
 
-def ships_conflicts(first: schemas.ShipCreate, second: schemas.ShipCreate):
+def ships_conflicts(
+    first: schemas.ShipCreate | ShipModel,
+    second: schemas.ShipCreate | ShipModel
+):
     """
     Checks if given ship has same length as second one or their positions
     collides with each other. Returns True if any of that conditions is met,
