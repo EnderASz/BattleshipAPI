@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Response, status
 
 from . import crud, schemas, tags
-from .exceptions import BoardNotFoundException
+from .exceptions import BoardInUseException, BoardNotFoundException
 from battleship_api.core.exceptions import build_exceptions_dict
 from battleship_api.core.database import get_db_session
 
@@ -91,3 +91,25 @@ async def get_board(board_id: int, db: Session = Depends(get_db_session)):
     if board is None:
         raise BoardNotFoundException({'id': board_id})
     return board
+
+
+@router.delete(
+    '/{board_id}',
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+    responses=build_exceptions_dict(
+        BoardInUseException,
+        BoardNotFoundException))
+async def delete_board(board_id: int, db: Session):
+    """
+    Removes board with given id after verifying that it is not in use by any
+    player.
+    \f
+    Params:
+        - board_id: Deleting board id
+        - db: Database session.
+            - Provided automatically by
+                `battleship_api.core.database.get_db_session` dependency
+                during request.
+    """
+    crud.delete_board(db, board_id)

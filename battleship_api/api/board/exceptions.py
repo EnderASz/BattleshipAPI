@@ -16,6 +16,19 @@ class BoardNotFoundException(BaseAPIException):
     schema = schemas.BoardSearch
 
 
+class BoardInUseException(BaseAPIException):
+    """
+    API exception raise when user tries to perform an action that is not
+    allowed while any player is assigned to board.
+
+    `battleship_api.api.board.schemas.BoardSearch` data must be provided, when
+    initialized.
+    """
+    code = status.HTTP_409_CONFLICT
+    message = "Action cannot be performed, while any player is assigned to board."
+    schema = schemas.BoardSearch
+
+
 class MissingBoardPasswordException(BaseAPIException):
     """
     API exception raise when missing board access password.
