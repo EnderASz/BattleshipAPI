@@ -1,6 +1,8 @@
 from pydantic import BaseModel as BaseSchema, validator
 import bcrypt
 
+from .utils import BoardState
+
 
 class BoardBase(BaseSchema):
     password: str | bytes | None
@@ -22,6 +24,8 @@ class BoardSearch(BaseSchema):
 
 
 class Board(BoardBase, BoardSearch):
+    state: BoardState
+
     class Config:
         orm_mode = True
 

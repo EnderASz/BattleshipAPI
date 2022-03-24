@@ -1,8 +1,10 @@
-from sqlalchemy import Integer, String
+from sqlalchemy import Enum, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import Column
 
 from battleship_api.core.database import BaseModel
+
+from .utils import BoardState
 
 
 class Board(BaseModel):
@@ -10,6 +12,7 @@ class Board(BaseModel):
 
     id = Column(Integer, primary_key=True, index=True)
     password = Column(String, nullable=True)
+    state = Column(Enum(BoardState), default=BoardState.preparing)
 
     players = relationship(
         'battleship_api.api.player.models.Player',
