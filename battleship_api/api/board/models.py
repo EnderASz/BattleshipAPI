@@ -3,8 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.schema import Column
 
 from battleship_api.core.database import BaseModel
-
-from .utils import BoardState
+from battleship_api.core.types import BoardState
 
 
 class Board(BaseModel):

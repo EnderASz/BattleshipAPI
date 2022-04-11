@@ -25,7 +25,7 @@ class BoardInUseException(BaseAPIException):
     initialized.
     """
     code = status.HTTP_409_CONFLICT
-    message = "Action cannot be performed, while any player is assigned to board."
+    message = (
     schema = schemas.BoardSearch
 
 

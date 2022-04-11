@@ -1,14 +1,14 @@
 from pydantic import BaseModel as BaseSchema, validator
 import bcrypt
 
-from .utils import BoardState
+from battleship_api.core.types import BoardState
 
 
-class BoardBase(BaseSchema):
+class BoardSecure(BaseSchema):
     password: str | bytes | None
 
 
-class BoardCreate(BoardBase):
+class BoardCreate(BoardSecure):
     @validator('password')
     def password_validator(cls, password):
         if not password:
@@ -22,14 +22,19 @@ class BoardCreate(BoardBase):
 class BoardSearch(BaseSchema):
     id: int
 
-
-class Board(BoardBase, BoardSearch):
-    state: BoardState
-
     class Config:
         orm_mode = True
 
 
-class BoardOut(BoardSearch):
+class BoardState(BaseSchema):
+    state: BoardState
+
+
+class BoardOut(BoardSearch, BoardState):
+    class Config:
+        orm_mode = True
+
+
+class BoardDB(BoardOut, BoardSecure):
     class Config:
         orm_mode = True
