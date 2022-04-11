@@ -9,6 +9,10 @@ class BoardState(IntEnum):
     game_finished = 2
 
 
+class Hit(BaseSchema):
+    hit: bool
+
+
 class Orientation(IntEnum):
     vertical = 0
     horizontal = 1
