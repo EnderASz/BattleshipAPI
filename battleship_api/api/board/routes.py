@@ -1,7 +1,14 @@
 from fastapi import APIRouter, Depends, Response, status
 
 from . import crud, schemas, tags
-from .exceptions import BoardInUseException, BoardNotFoundException
+from .exceptions import (
+    BoardInUseException,
+    BoardNotFoundException,
+    GameNotFinishedException)
+
+from battleship_api.api.player import schemas as player_schemas
+
+from battleship_api.api.ship.funcs import is_ship
 
 from battleship_api.core.database import get_db_session
 from battleship_api.core.exceptions import build_exceptions_dict
@@ -129,3 +136,50 @@ async def delete_board(board_id: int, db: Session = Depends(get_db_session)):
         raise BoardInUseException(schemas.BoardSearch(id=board_id))
     db.delete(board)
     db.commit()
+
+
+@router.get(
+    '/{board_id}/winner',
+    status_code=status.HTTP_200_OK,
+    response_model=player_schemas.Player,
+    responses=build_exceptions_dict(
+        BoardNotFoundException,
+        GameNotFinishedException),
+    tags=[tags.boards_operation['name']]
+)
+async def get_winner(board_id: int, db: Session = Depends(get_db_session)):
+    """
+    Retrieves players assigned to the given board and returns this one, which
+    is winner after finished game.
+
+    Params:
+        - board_id: Board id
+        - db: Database session.
+            - Provided automatically by
+                `battleship_api.core.database.get_db_session` dependency
+                during request.
+
+    Raises:
+        - BoardNotFoundException: Board not found by given id.
+        - GameNotFinishedException: Operation can not be performed, due to
+            board status is not "finished".
+
+    Returns:
+        Winner (player) object
+    """
+    board = crud.get_board(db, board_id)
+    if board is None:
+        raise BoardNotFoundException(schemas.BoardSearch(id=board_id))
+    if board.state is not BoardState.game_finished:
+        raise GameNotFinishedException(schemas.BoardOut.from_orm(board))
+
+    enemy_ships = board.players[1].ships
+    success_shots = [
+        shot
+        for shot
+        in board.players[0].shots
+        if is_ship(shot.column, shot.row, enemy_ships)]
+
+    if (sum([ship.length for ship in enemy_ships]) == len(success_shots)):
+        return player_schemas.Player.from_orm(board.players[0])
+    return player_schemas.Player.from_orm(board.players[1])
