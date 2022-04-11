@@ -23,8 +23,6 @@ def create_ship(
         New ship database object instance.
     """
     db.add(new_ship := ShipModel(**ship.dict()))
-    db.commit()
-    db.refresh(new_ship)
     return new_ship
 
 
