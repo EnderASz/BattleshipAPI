@@ -3,7 +3,7 @@ from pydantic import BaseSettings, Field
 import json
 import os
 
-from .logging import get_app_logger
+from .logging import append_logger_queue
 
 from pathlib import Path
 from pydantic import AnyUrl, PostgresDsn
@@ -60,11 +60,11 @@ def get_settings(json_path: Path | None = None, **settings_set) -> Settings:
         try:
             config = json.load(open(json_path, encoding='utf-8'))
         except FileNotFoundError:
-            get_app_logger().warning(
-                f"Config file `{json_path}` could not be found.")
+            append_logger_queue(lambda logger: logger.warning(
+                f"Config file `{json_path}` could not be found."))
         except json.decoder.JSONDecodeError:
-            get_app_logger().warning(
-                f"Config file `{json_path}` could not be decoded properly.")
+            append_logger_queue(lambda logger: logger.warning(
+                f"Config file `{json_path}` could not be decoded properly."))
         else:
             settings_set |= config
     return Settings(**settings_set)

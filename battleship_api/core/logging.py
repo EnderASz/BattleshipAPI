@@ -2,9 +2,16 @@ import logging
 import logging.config
 from pydantic import BaseModel
 
+from logging import Logger
+from typing import Callable
+
 
 DEFAULT_LOGGER_NAME = 'battleship_api'
 DEBUG_LOGGER_NAME = f'{DEFAULT_LOGGER_NAME}.debug'
+
+
+logger_queue = list()
+logger_initialized = False
 
 
 class LogConfig(BaseModel):
@@ -37,6 +44,16 @@ class LogConfig(BaseModel):
     }
 
 
+def append_logger_queue(task: Callable[[Logger], None]):
+    global logger_queue
+    global logger_initialized
+    if logger_initialized:
+        global logger
+        task(logger)
+        return
+    logger_queue.append(task)
+
+
 def init(name: str | None = None):
     """
     Initialize new logger and replace previous one with it.
@@ -49,8 +66,13 @@ def init(name: str | None = None):
             - Default: `battleship_api.core.logging.DEFAULT_LOGGER_NAME`
     """
     global logger
+    global logger_queue
+    global logger_initialized
     logging.config.dictConfig(LogConfig().dict())
     logger = logging.getLogger(name or DEFAULT_LOGGER_NAME)
+    logger_initialized = True
+    for task in logger_queue:
+        task(logger)
 
 
 def get_app_logger():
