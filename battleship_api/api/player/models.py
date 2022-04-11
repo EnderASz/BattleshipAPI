@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy import Boolean, Column, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 
 from battleship_api.core.database import BaseModel
@@ -13,10 +13,12 @@ class Player(BaseModel):
         Integer,
         ForeignKey(f'{Board.__tablename__}.id'),
         index=True)
+    ready = Column(Boolean, default=False)
 
     board = relationship(
         'battleship_api.api.board.models.Board',
         back_populates='players')
     ships = relationship(
         'battleship_api.api.ship.models.Ship',
+        cascade="all, delete",
         back_populates='owner')

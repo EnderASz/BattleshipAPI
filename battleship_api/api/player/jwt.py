@@ -8,8 +8,9 @@ ENCODE_ALGORITHM = jwt.ALGORITHMS.HS256
 DECODE_ALGORITHMS = [jwt.ALGORITHMS.HS256]
 
 
-def encode_player(player: schemas.Player) -> str:
-    """Encodes a player into JWT (JSON Web Token)
+def encode_player(player: schemas.PlayerToken) -> str:
+    """
+    Encodes a player into JWT (JSON Web Token)
 
     Params:
         player: Player object
@@ -24,16 +25,21 @@ def encode_player(player: schemas.Player) -> str:
 
 
 def decode_player(token: str) -> schemas.Player:
-    """Decode a player's JWT (JSON Web Token) and returns a player object.
+    """
+    Decode a player's JWT (JSON Web Token) and returns a player object or None
+    if it's invalid.
 
-    Args:
+    Params:
         token: Player's JWT token string
 
     Returns:
-        Player object
+        Player object or None if given token is invalid
     """
-    return schemas.Player(
-        **jwt.decode(
-            token,
-            get_app_settings().secret_key,
-            DECODE_ALGORITHMS))
+    try:
+        return schemas.Player(
+            **jwt.decode(
+                token,
+                get_app_settings().secret_key,
+                DECODE_ALGORITHMS))
+    except jwt.JWTError:
+        return None

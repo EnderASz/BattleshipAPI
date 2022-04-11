@@ -7,22 +7,25 @@ from fastapi import (
     status)
 import bcrypt
 
-from . import schemas
-from . import crud
-from . import jwt
-from . import tags
-from battleship_api.api.board import crud as board_crud
-from battleship_api.core.database import get_db_session
-from battleship_api.core.exceptions import build_exceptions_dict
-
+from . import crud, jwt, schemas, tags
 from .exceptions import (
     InvalidPlayerAccessTokenException,
     MaximumPlayersNumberException,
-    PlayerNotFoundException)
+    PlayerNotFoundException,
+    PlayerStatusChangeConflictException)
+from .models import Player as PlayerModel
+
+from battleship_api.api.board import crud as board_crud
+from battleship_api.api.board import schemas as board_schemas
 from battleship_api.api.board.exceptions import (
     BoardNotFoundException,
-    MissingBoardPasswordException,
-    InvalidBoardPasswordException)
+    GameFinishedException,
+    InvalidBoardPasswordException,
+    MissingBoardPasswordException)
+
+from battleship_api.core.database import get_db_session
+from battleship_api.core.exceptions import build_exceptions_dict
+from battleship_api.core.types import BoardState
 
 from sqlalchemy.orm import Session
 
@@ -104,6 +107,7 @@ async def create_player(
     board = board_crud.get_board(db, board_id)
     if board is None:
         raise BoardNotFoundException({'id': board_id})
+
     if board.password is not None:
         if password is None:
             raise MissingBoardPasswordException()
@@ -114,7 +118,11 @@ async def create_player(
             raise InvalidBoardPasswordException()
     if not len(board.players) < 2:
         raise MaximumPlayersNumberException({'id': board.id})
+
     player = crud.create_player(db, board)
+    db.commit()
+    db.refresh(player)
+
     token = jwt.encode_player(schemas.Player.from_orm(player))
     response.headers['X-Auth-Token'] = token
     return player
@@ -142,17 +150,19 @@ async def get_player(player_id: int, db: Session = Depends(get_db_session)):
     """
     player = crud.get_player(db, player_id)
     if player is None:
-        raise PlayerNotFoundException({'id': player_id})
+        raise PlayerNotFoundException(schemas.PlayerSearch(id=player_id))
     return player
 
 
 @router.delete(
     '/{player_id}',
-    status_code=status.HTTP_200_OK,
-    tags=[tags.players_operation['name']],
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
     responses=build_exceptions_dict(
+        GameFinishedException,
         InvalidPlayerAccessTokenException,
-        PlayerNotFoundException))
+        PlayerNotFoundException),
+    tags=[tags.players_operation['name']])
 async def delete_player(
     player_id: int,
     x_auth_token: str = Header(...),
@@ -161,19 +171,113 @@ async def delete_player(
     """
     Deletes player if given JWT access token (X-Auth-Token header value) is
     valid.
+
+    If player was in game, it's status will change to "preparing".
     \f
     Params:
         - player_id: Player id
         - x_auth_token: Player JWT access token.
+            - Provided by header.
         - db: Database session.
             - Provided automatically by
                 `battleship_api.core.database.get_db_session` dependency
                 during request.
+
+    Raises:
+        - GameFinishedException: Board status is "finished" and player cannot
+            be deleted.
+        - InvalidPlayerAccessTokenException: Given player authentication token
+            is invalid.
+        - PlayerNotFoundException: Player not found by given id.
+
     """
     player = crud.get_player(db, player_id)
-    auth_player = jwt.decode_player(x_auth_token)
+    authed = jwt.decode_player(x_auth_token)
     if player is None:
-        raise PlayerNotFoundException({'player_id': player_id})
-    if [auth_player.id, auth_player.board_id] != [player.id, player.board_id]:
-        raise InvalidPlayerAccessTokenException({'player_id': player.id})
-    player.delete()
+        raise PlayerNotFoundException(schemas.PlayerSearch(id=player_id))
+    if authed is None or authed.id != player.id:
+        raise InvalidPlayerAccessTokenException({"x_auth_token": x_auth_token})
+    if player.board.status == BoardState.game_finished:
+        raise GameFinishedException(
+            board_schemas.BoardSearch.from_orm(player.board))
+    player.board.state = BoardState.preparing
+
+    db.delete(player)
+    db.commit()
+
+
+@router.put(
+    '/{player_id}/ready',
+    status_code=status.HTTP_200_OK,
+    response_model=schemas.Player,
+    responses=build_exceptions_dict(
+        InvalidPlayerAccessTokenException,
+        PlayerNotFoundException,
+        PlayerStatusChangeConflictException),
+    tags=[tags.players_operation['name']])
+async def update_player_status(
+    player_id: int,
+    body: schemas.PlayerStatus,
+    x_auth_token: str = Header(...),
+    db: Session = Depends(get_db_session)
+):
+    """
+    Updates player's `ready` status.
+
+    If new status is True, checks if another
+    player assigned to that same board as this player is ready and updates the
+    board status to "in game".
+
+    Cannot update player status if board status is not "preparing" or player
+    has not assigned 4 ships.
+    \f
+    Params:
+        - player_id: Player id
+        - x_auth_token: Player JWT access token.
+            - Provided by `X-Auth-Token` header.
+        - body: Request body containing new player's `ready` status data.
+        - db: Database session.
+            - Provided automatically by
+                `battleship_api.core.database.get_db_session` dependency
+                during request.
+
+    Raises:
+        - InvalidPlayerAccessTokenException: Given player authentication token
+            is invalid.
+        - PlayerNotFoundException: Player not found by given id.
+        - PlayerStatusChangeConflictException: Player status cannot be updated
+            because board status is not "preparing" or player has not 4 ships
+            assigned.
+
+    Returns:
+        Updated player database object.
+    """
+    player = crud.get_player(db, player_id)
+    if player is None:
+        raise PlayerNotFoundException(schemas.PlayerSearch(id=player_id))
+    authed = jwt.decode_player(x_auth_token)
+    if authed is None or authed.id != player.id:
+        raise InvalidPlayerAccessTokenException({"x_auth_token": x_auth_token})
+
+    new_status = body.ready
+
+    if (
+        player.board.state != BoardState.preparing
+        or (new_status and len(player.ships) != 4)
+    ):
+        raise PlayerStatusChangeConflictException(
+            schemas.PlayerSearch.from_orm(player))
+
+    player.ready = new_status
+
+    if (
+        player.ready
+        and db.query(PlayerModel.ready).filter(
+            PlayerModel.board_id == player.board_id,
+            PlayerModel.id != player.id
+        ).scalar()
+    ):
+        player.board.state = BoardState.in_game
+
+    db.commit()
+    return player

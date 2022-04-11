@@ -26,6 +26,7 @@ class BoardInUseException(BaseAPIException):
     """
     code = status.HTTP_409_CONFLICT
     message = (
+        "Action cannot be performed, when any player is assigned to board.")
     schema = schemas.BoardSearch
 
 
@@ -43,3 +44,18 @@ class InvalidBoardPasswordException(BaseAPIException):
     """
     code = status.HTTP_403_FORBIDDEN
     message = "Board access password is incorrect"
+
+
+class GameFinishedException(BaseAPIException):
+    """
+    API exception raise when action cannot be performed on board being in
+    game finished state.
+
+    `battleship_api.api.board.schemas.BoardSearch` data must be provided, when
+    initialized.
+    """
+    code = status.HTTP_409_CONFLICT
+    message = (
+        "Action cannot be performed, when board status is \"game"
+        " finished\".")
+    schema = schemas.BoardSearch

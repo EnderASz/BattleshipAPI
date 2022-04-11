@@ -1,5 +1,5 @@
-from email.mime import message
 from fastapi import status
+from pydantic import BaseModel as BaseSchema
 
 from . import schemas
 from battleship_api.api.board import schemas as board_schemas
@@ -35,9 +35,33 @@ class InvalidPlayerAccessTokenException(BaseAPIException):
     """
     API exception raise when received player access token is invalid.
 
-    `battleship_api.api.player.schemas.PlayerSearch` data must be provided,
+    Dictionary with `x_auth_token` value must be provided,
     when initialized.
+
+    Example:
+    ```python
+    raise InvalidPlayerAccessTokenException({'x_auth_token': "invalid token"})
+    ```
     """
     code = status.HTTP_403_FORBIDDEN
     message = "Invalid X-Auth-Token header value"
+
+    class schema(BaseSchema):
+        x_auth_token: str
+
+
+class PlayerStatusChangeConflictException(BaseAPIException):
+    """
+    API exception raise when occurrs conflict on change of player's status.
+    Conflict may occure in one of the following cases:
+        - board state is not "preparing"
+        - player have to few ships assigned (created)
+
+    `battleship_api.api.player.schemas.PlayerSearch` data must be provided,
+    when initialized.
+    """
+    code = status.HTTP_409_CONFLICT
+    message = ("Player's status change conflict occured, probably due to"
+               " assigned board's status is \"in game\" or player have to few"
+               " ships created.")
     schema = schemas.PlayerSearch
