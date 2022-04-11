@@ -1,19 +1,7 @@
-from pydantic import BaseModel as BaseSchema
-
-from enum import Enum
-
 from . import schemas
 from .models import Ship as ShipModel
 
-
-class Orientation(Enum):
-    vertical = 0
-    horizontal = 1
-
-
-class Point(BaseSchema):
-    x: int
-    y: int
+from battleship_api.core.types import Orientation, Point
 
 
 def get_ship_cords(
@@ -22,20 +10,20 @@ def get_ship_cords(
     """
     Returns points of start and end of a given ship in a tuple.
 
-    Args:
+    Params:
         - ship: Object containing ship location
 
     Returns:
         Tuple of start and end points of a ship.
     """
-    ship_start = Point(ship.column, ship.row)
+    ship_start = Point(x=ship.column, y=ship.row)
     if ship.orientation == Orientation.horizontal:
         return (
             ship_start,
-            Point(ship.column+ship.length-1, ship.row))
+            Point(x=ship.column+ship.length-1, y=ship.row))
     return (
         ship_start,
-        Point(ship.column, ship.row+ship.length-1))
+        Point(x=ship.column, y=ship.row+ship.length-1))
 
 
 def is_ship(
@@ -55,10 +43,8 @@ def is_ship(
     Returns:
         True if any given ship exists at given location, otherwise False.
     """
-
-    ship_start, ship_end = get_ship_cords(ship)
-
     for ship in ships:
+        ship_start, ship_end = get_ship_cords(ship)
         if (
             ship_start.x <= column <= ship_end.x
             and ship_start.y <= row <= ship_end.y
