@@ -50,6 +50,20 @@ class InvalidPlayerAccessTokenException(BaseAPIException):
         x_auth_token: str
 
 
+class PlayerIsReadyException(BaseAPIException):
+    """
+    API exception raise when cannot do an operation that needs player not to be
+    ready.
+
+    `battleship_api.api.player.schemas.PlayerSearch` data must be provided,
+    when initialized.
+    """
+    code = status.HTTP_409_CONFLICT
+    message = ("Operation cannot be performed, because player have ready"
+               " status.")
+    schema = schemas.PlayerSearch
+
+
 class PlayerStatusChangeConflictException(BaseAPIException):
     """
     API exception raise when occurrs conflict on change of player's status.
