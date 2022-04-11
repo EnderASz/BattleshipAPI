@@ -3,8 +3,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Enum, ForeignKey, Integer
 
 from battleship_api.core.database import BaseModel
+from battleship_api.core.types import Orientation
 from battleship_api.api.player.models import Player
-from .utils import Orientation
 
 
 class Ship(BaseModel):

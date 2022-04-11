@@ -1,6 +1,16 @@
 from pydantic import BaseModel as BaseSchema, Field
 
-from .utils import Orientation
+from enum import Enum
+
+from battleship_api.core.types import Orientation
+
+
+class ShipSearch(BaseSchema):
+    id: int
+
+
+class ShipOwner(BaseSchema):
+    owner_id: int
 
 
 class ShipLocation(BaseSchema):
@@ -10,16 +20,19 @@ class ShipLocation(BaseSchema):
     orientation: Orientation
 
 
-class ShipRestricted(ShipLocation):
+class ShipCreate(ShipLocation, ShipOwner):
     pass
 
 
-class ShipCreate(ShipRestricted):
-    owner_id: int
-
-
-class Ship(ShipCreate):
-    id: int
-
+class ShipPublic(ShipSearch, ShipOwner):
     class Config:
         orm_mode = True
+
+
+class ShipRestricted(ShipLocation):
+    class Config:
+        orm_mode = True
+
+
+class Ship(ShipPublic, ShipRestricted):
+    pass
