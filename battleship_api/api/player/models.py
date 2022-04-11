@@ -22,3 +22,7 @@ class Player(BaseModel):
         'battleship_api.api.ship.models.Ship',
         cascade="all, delete",
         back_populates='owner')
+    shots = relationship(
+        'battleship_api.api.shot.models.Shot',
+        cascade="all, delete",
+        back_populates='player')
