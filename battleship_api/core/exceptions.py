@@ -33,11 +33,12 @@ class BaseAPIException(HTTPException):
         super().__init__(self.code, self.message, **kwargs)
         self.data = {'description': self.message}
         if self.schema is not None:
-            if exception_data is None:
-                exception_data = dict()
-            if not isinstance(exception_data, self.schema):
-                exception_data = self.schema(**exception_data).dict()
-            self.data.update({'data': exception_data})
+            exception_data = (
+                exception_data.dict()
+                if isinstance(exception_data, BaseSchema)
+                else exception_data
+            ) or dict()
+            self.data.update({'data': self.schema(**(exception_data)).dict()})
 
     def response(self):
         from fastapi.responses import JSONResponse
