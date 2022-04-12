@@ -197,7 +197,7 @@ async def delete_player(
         raise PlayerNotFoundException(schemas.PlayerSearch(id=player_id))
     if authed is None or authed.id != player.id:
         raise InvalidPlayerAccessTokenException({"x_auth_token": x_auth_token})
-    if player.board.status == BoardState.game_finished:
+    if player.board.state == BoardState.game_finished:
         raise GameFinishedException(
             board_schemas.BoardSearch.from_orm(player.board))
     player.board.state = BoardState.preparing
