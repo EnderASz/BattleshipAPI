@@ -34,7 +34,7 @@ In case of creating environment variables, name of each variable should starts w
 |debug|`True`|:white_check_mark:|Switch deciding whether an application is running in debug mode or not.
 |db_url|`sqlite:///./db.sqlite3`|:x:|Database connection string or url
 |db_check_same_thread|:heavy_minus_sign:|Required with SQLite database.|In case of use SQLite database it's recommend to set this value to `False`. For more informations look [here](https://fastapi.tiangolo.com/advanced/sql-databases-peewee/?h=check_same_thread#note).
-|SECRET_KEY|By default application use constant predefined key|:white_check_mark:|Secret Key for application instance.<br>**It's recommended to provide it and keep it in secret.**
+|secret_key|By default application use constant predefined key|:white_check_mark:|Secret Key for application instance.<br>**It's recommended to provide it and keep it in secret.**
 
 ## Basic app run
 To run application, just run `runserver.py` via installed Python environment.

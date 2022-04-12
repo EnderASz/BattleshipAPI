@@ -37,7 +37,7 @@ W przypadku użycia zmiennych środowiskowych, nazwa zmiennej powinna być poprz
 |debug|`True`|:white_check_mark:|Przełącznik decydujący czy aplikacja ma być uruchomiona w trybie debugowania
 |db_url|`sqlite:///./db.sqlite3`|:x:|URL połączenia z bazą danych (SQLite lub PostgreSQL)
 |db_check_same_thread|:heavy_minus_sign:|Wymagany przy użyciu bazy danych SQLite.|W przypadku użycia bazy danych SQLite zalecane jest, aby wartość ta była ustawiona na `False`. Po więcej informacji przejdź [tutaj](https://fastapi.tiangolo.com/advanced/sql-databases-peewee/?h=check_same_thread#note).
-|SECRET_KEY|Domyślnie używany jest predefiniowany klucz|:white_check_mark:|Sekretny klucz dla instancji aplikacji.<br>**Rekomendowane jest, aby wprowadzić własny oraz przechowywać go w sekrecie.**
+|secret_key|Domyślnie używany jest predefiniowany klucz|:white_check_mark:|Sekretny klucz dla instancji aplikacji.<br>**Rekomendowane jest, aby wprowadzić własny oraz przechowywać go w sekrecie.**
 
 ## Podstawowe uruchomienie aplikacji
 W celu uruchomienia aplikacji wystarczy uruchomić plik `runserver.py` za pomocą zainstalowanego środowiska Python.
