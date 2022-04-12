@@ -54,7 +54,7 @@ async def get_ships(
 
 @router.post(
     '/',
-    status_code=status.HTTP_201_OK,
+    status_code=status.HTTP_201_CREATED,
     response_model=schemas.Ship,
     responses=build_exceptions_dict(
         InvalidPlayerAccessTokenException,
