@@ -23,6 +23,8 @@ from battleship_api.api.board.exceptions import (
     InvalidBoardPasswordException,
     MissingBoardPasswordException)
 
+from battleship_api.api.shot.models import Shot as ShotModel
+
 from battleship_api.core.database import get_db_session
 from battleship_api.core.exceptions import build_exceptions_dict
 from battleship_api.core.types import BoardState
@@ -200,8 +202,16 @@ async def delete_player(
     if player.board.state == BoardState.game_finished:
         raise GameFinishedException(
             board_schemas.BoardSearch.from_orm(player.board))
-    player.board.state = BoardState.preparing
 
+    player.board.state = BoardState.preparing
+    enemy_player_id = db.query(PlayerModel.id).filter(
+        PlayerModel.id != authed.id,
+        PlayerModel.board_id == authed.board_id
+    ).scalar()
+    shots_to_delete = db.query(ShotModel).filter(
+        ShotModel.player_id == enemy_player_id).all()
+    for shot in shots_to_delete:
+        db.delete(shot)
     db.delete(player)
     db.commit()
 
