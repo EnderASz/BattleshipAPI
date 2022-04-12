@@ -1,13 +1,16 @@
-from pydantic import AnyUrl
+from pydantic import PostgresDsn, stricturl
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 
+SQLiteUrl = stricturl(host_required=False, allowed_schemes=["sqlite"])
+
+
 BaseModel = declarative_base()
 
 
-def init(db_url: AnyUrl | None = None, **connect_args):
+def init(db_url: PostgresDsn | SQLiteUrl, **connect_args):
     """
     Initialize database connection engine instance and local Session class.
     After that creates all needed, non existing tables in connected database.

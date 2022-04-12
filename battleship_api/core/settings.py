@@ -6,8 +6,8 @@ import os
 from .logging import append_logger_queue
 
 from pathlib import Path
-from pydantic import AnyUrl, PostgresDsn
-
+from pydantic import PostgresDsn
+from .database import SQLiteUrl
 
 ENV_PREFIX = 'battleship_api'
 
@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     port: int = Field(80)
     debug: bool = Field(True)
 
-    db_url: PostgresDsn | AnyUrl | None
+    db_url: PostgresDsn | SQLiteUrl = Field("sqlite:///./db.sqlite3")
     db_check_same_thread: bool | None
 
     secret_key: str = Field('please_overwrite_me_im_not_secure')
